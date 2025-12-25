@@ -11,11 +11,11 @@ RUN apt-get -y update \
 WORKDIR /source
 
 # copy csproj and restore as distinct layers
-COPY onix-api/* ./onix-api/
-COPY onix-api.sln .
+COPY otep-api/* ./otep-api/
+COPY otep-api.sln .
 
-RUN dotnet restore onix-api/onix-api.csproj
-RUN dotnet publish onix-api/onix-api.csproj -c release -o /app --no-restore -p:PackageVersion=${version}
+RUN dotnet restore otep-api/otep-api.csproj
+RUN dotnet publish otep-api/otep-api.csproj -c release -o /app --no-restore -p:PackageVersion=${version}
 
 ##### final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
@@ -38,4 +38,4 @@ USER dotnet:dotnet
 
 EXPOSE 8080
 ENV ASPNETCORE_URLS="http://*:8080"
-ENTRYPOINT ["dotnet", "onix-api.dll"]
+ENTRYPOINT ["dotnet", "otep-api.dll"]
