@@ -5,6 +5,13 @@ using Its.Otep.Api.Database.Seeders;
 using Its.Otep.Api.Database;
 using StackExchange.Redis;
 using Its.Otep.Api.Utils;
+using Its.Otep.Api.Database.Repositories;
+using Its.Otep.Api.Services;
+using Microsoft.AspNetCore.Authorization;
+using Its.Otep.Api.Authorizations;
+using Its.Otep.Api.Authentications;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
 
 
 namespace Its.Otep.Api
@@ -33,7 +40,25 @@ namespace Its.Otep.Api
             var redisHostStr = $"{cfg["Redis:Host"]}:{cfg["Redis:Port"]}"; 
             builder.Services.AddSingleton<IConnectionMultiplexer>(
                 sp => ConnectionMultiplexer.Connect(redisHostStr));
+
             builder.Services.AddScoped<RedisHelper>();
+
+            builder.Services.AddSingleton(sp =>
+            {
+                // ถ้าใช้ service account json
+                var storageClient = StorageClient.Create(
+                    GoogleCredential.FromFile(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
+                );
+
+                return storageClient;
+            });
+            builder.Services.AddSingleton(sp =>
+            {
+                return GoogleCredential.FromFile(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
+                                    .CreateScoped("https://www.googleapis.com/auth/cloud-platform");
+            });
+            builder.Services.AddSingleton<IRedisHelper, RedisHelper>();
+            builder.Services.AddSingleton<IStorageUtils, StorageUtils>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -43,6 +68,23 @@ namespace Its.Otep.Api
             builder.Services.AddTransient<DataSeeder>();
 
             builder.Services.AddScoped<IDataContext, DataContext>();
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            builder.Services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+
+
+            builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IOrganizationUserRepository, OrganizationUserRepository>();
+            
+
+            builder.Services.AddTransient<IAuthorizationHandler, GenericRbacHandler>();
+            builder.Services.AddScoped<IBasicAuthenticationRepo, BasicAuthenticationRepo>();
+            builder.Services.AddScoped<IBearerAuthenticationRepo, BearerAuthenticationRepo>();
 
             builder.Services.AddHttpClient();
             builder.Services.AddHealthChecks();
