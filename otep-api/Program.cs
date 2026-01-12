@@ -12,6 +12,8 @@ using Its.Otep.Api.Authorizations;
 using Its.Otep.Api.Authentications;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.ResponseCompression;
 
 
 namespace Its.Otep.Api
@@ -89,6 +91,25 @@ namespace Its.Otep.Api
             builder.Services.AddHttpClient();
             builder.Services.AddHealthChecks();
 
+
+            builder.Services.AddAuthentication("BasicOrBearer")
+                .AddScheme<AuthenticationSchemeOptions, AuthenticationHandlerProxy>("BasicOrBearer", null);
+
+            builder.Services.AddAuthorization(options => {
+                var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder("BasicOrBearer");
+                defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+                options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+
+                options.AddPolicy("GenericRolePolicy", policy => policy.AddRequirements(new GenericRbacRequirement()));
+            });
+            
+            // เปิด middleware สำหรับ gzip
+            builder.Services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true; // ให้บีบอัดแม้เป็น HTTPS
+                options.Providers.Add<GzipCompressionProvider>();
+            });
+            
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
