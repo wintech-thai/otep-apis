@@ -36,7 +36,6 @@ namespace Its.Otep.Api.Authentications
             var username = credentials[0];
             var password = credentials[1];
 
-            //TODO : อนาคตต้องมี การ check ว่าเป็น API ของ Admin หรือ User
             var user = basicAuthenRepo!.Authenticate(pc.OrgId, username, password, request);
             var authResult = new AuthenResult()
             {
