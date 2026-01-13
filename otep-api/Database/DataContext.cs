@@ -21,6 +21,7 @@ public class DataContext : DbContext, IDataContext
     public DbSet<MUser>? Users { get; set; }
     public DbSet<MOrganizationUser>? OrganizationUsers { get; set; }
     public DbSet<MCustomRole>? CustomRoles { get; set; }
+    public DbSet<MDocument>? Documents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,5 +50,8 @@ public class DataContext : DbContext, IDataContext
 
         modelBuilder.Entity<MCustomRole>()
             .HasIndex(t => new { t.OrgId, t.RoleName }).IsUnique();
+
+        modelBuilder.Entity<MDocument>()
+            .HasIndex(t => new { t.OrgId, t.DocName }).IsUnique();
     }
 }

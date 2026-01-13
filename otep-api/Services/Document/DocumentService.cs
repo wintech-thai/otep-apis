@@ -1,0 +1,180 @@
+using Its.Otep.Api.Models;
+using Its.Otep.Api.Database.Repositories;
+using Its.Otep.Api.ViewsModels;
+using Its.Otep.Api.ModelsViews;
+using Its.Otep.Api.Utils;
+
+namespace Its.Otep.Api.Services
+{
+    public class DocumentService : BaseService, IDocumentService
+    {
+        private readonly IDocumentRepository? repository = null;
+
+        public DocumentService(IDocumentRepository repo) : base()
+        {
+            repository = repo;
+        }
+
+        public async Task<MVDocument> GetDocumentById(string orgId, string documentId)
+        {
+            repository!.SetCustomOrgId(orgId);
+
+            var r = new MVDocument()
+            {
+                Status = "OK",
+                Description = "Success"
+            };
+
+            if (!ServiceUtils.IsGuidValid(documentId))
+            {
+                r.Status = "UUID_INVALID";
+                r.Description = $"Document ID [{documentId}] format is invalid";
+
+                return r;
+            }
+
+            var result = await repository!.GetDocumentById(documentId);
+            if (result == null)
+            {
+                r.Status = "NOTFOUND";
+                r.Description = $"Document ID [{documentId}] not found for the organization [{orgId}]";
+
+                return r;
+            }
+
+            r.Document = result;
+            r.Document.MetaData = "";
+
+            return r;
+        }
+
+        public async Task<MVDocument> AddDocument(string orgId, MDocument document)
+        {
+            repository!.SetCustomOrgId(orgId);
+
+            var r = new MVDocument();
+            r.Status = "OK";
+            r.Description = "Success";
+
+            if (string.IsNullOrEmpty(document.DocName))
+            {
+                r.Status = "NAME_MISSING";
+                r.Description = $"Document name is missing!!!";
+
+                return r;
+            }
+
+            var isExist = await repository!.IsDocNameExist(document.DocName);
+            if (isExist)
+            {
+                r.Status = "NAME_DUPLICATE";
+                r.Description = $"Document name [{document.DocName}] already exist!!!";
+
+                return r;
+            }
+
+            var result = await repository!.AddDocument(document);
+            r.Document = result;
+
+            r.Document.MetaData = "";
+
+            return r;
+        }
+
+        public async Task<MVDocument> DeleteDocumentById(string orgId, string documentId)
+        {
+            repository!.SetCustomOrgId(orgId);
+
+            var r = new MVDocument()
+            {
+                Status = "OK",
+                Description = "Success"
+            };
+
+            if (!ServiceUtils.IsGuidValid(documentId))
+            {
+                r.Status = "UUID_INVALID";
+                r.Description = $"Document ID [{documentId}] format is invalid";
+
+                return r;
+            }
+
+            var m = await repository!.DeleteDocumentById(documentId);
+            if (m == null)
+            {
+                r.Status = "NOTFOUND";
+                r.Description = $"Document ID [{documentId}] not found for the organization [{orgId}]";
+
+                return r;
+            }
+
+            r.Document = m;
+            return r;
+        }
+
+        public async Task<List<MDocument>> GetDocuments(string orgId, VMDocument param)
+        {
+            if ((param.Limit >= 100) || (param.Limit <= 0))
+            {
+                param.Limit = 100;
+            }
+
+            repository!.SetCustomOrgId(orgId);
+            var result = await repository!.GetDocuments(param);
+
+            return result;
+        }
+
+        public async Task<int> GetDocumentCount(string orgId, VMDocument param)
+        {
+            repository!.SetCustomOrgId(orgId);
+            var result = await repository!.GetDocumentCount(param);
+
+            return result;
+        }
+
+        public async Task<MVDocument> UpdateDocumentById(string orgId, string documentId, MDocument document)
+        {
+            repository!.SetCustomOrgId(orgId);
+
+            var r = new MVDocument()
+            {
+                Status = "OK",
+                Description = "Success"
+            };
+
+            if (!ServiceUtils.IsGuidValid(documentId))
+            {
+                r.Status = "UUID_INVALID";
+                r.Description = $"Document ID [{documentId}] format is invalid";
+
+                return r;
+            }
+
+            var docName = document.DocName;
+            var cr = await repository!.GetDocumentByName(docName!);
+            if ((cr != null) && (cr.DocId.ToString() != documentId))
+            {
+                r.Status = "NAME_DUPLICATE";
+                r.Description = $"Document name [{docName}] already exist!!!";
+
+                return r;
+            }
+
+            var result = await repository!.UpdateDocumentById(documentId, document);
+            if (result == null)
+            {
+                r.Status = "NOTFOUND";
+                r.Description = $"Document ID [{documentId}] not found for the organization [{orgId}]";
+
+                return r;
+            }
+
+            r.Document = result;
+            //ไม่ให้ส่งออกไป แต่เช็คเพิ่มเติมนะว่าไม่ได้ update กลับไปที่ DB
+            r.Document.MetaData = "";
+
+            return r;
+        }
+    }
+}
