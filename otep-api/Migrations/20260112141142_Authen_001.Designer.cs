@@ -3,6 +3,7 @@ using System;
 using Its.Otep.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace otep.api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260112141142_Authen_001")]
+    partial class Authen_001
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,59 +124,6 @@ namespace otep.api.Migrations
                         .IsUnique();
 
                     b.ToTable("CustomRoles");
-                });
-
-            modelBuilder.Entity("Its.Otep.Api.Models.MDocument", b =>
-                {
-                    b.Property<Guid?>("DocId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("doc_id");
-
-                    b.Property<string>("Bucket")
-                        .HasColumnType("text")
-                        .HasColumnName("bucket");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_date");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("DocName")
-                        .HasColumnType("text")
-                        .HasColumnName("doc_name");
-
-                    b.Property<string>("DocType")
-                        .HasColumnType("text")
-                        .HasColumnName("doc_type");
-
-                    b.Property<string>("MetaData")
-                        .HasColumnType("text")
-                        .HasColumnName("metadata");
-
-                    b.Property<string>("OrgId")
-                        .HasColumnType("text")
-                        .HasColumnName("org_id");
-
-                    b.Property<string>("Path")
-                        .HasColumnType("text")
-                        .HasColumnName("path");
-
-                    b.Property<string>("Tags")
-                        .HasColumnType("text")
-                        .HasColumnName("tags");
-
-                    b.HasKey("DocId");
-
-                    b.HasIndex("DocName");
-
-                    b.HasIndex("OrgId", "DocName")
-                        .IsUnique();
-
-                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("Its.Otep.Api.Models.MMasterRef", b =>
