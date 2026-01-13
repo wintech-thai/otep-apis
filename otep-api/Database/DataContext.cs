@@ -22,6 +22,7 @@ public class DataContext : DbContext, IDataContext
     public DbSet<MOrganizationUser>? OrganizationUsers { get; set; }
     public DbSet<MCustomRole>? CustomRoles { get; set; }
     public DbSet<MDocument>? Documents { get; set; }
+    public DbSet<MJob>? Jobs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,5 +54,7 @@ public class DataContext : DbContext, IDataContext
 
         modelBuilder.Entity<MDocument>()
             .HasIndex(t => new { t.OrgId, t.DocName }).IsUnique();
+
+        modelBuilder.Entity<MJob>();
     }
 }

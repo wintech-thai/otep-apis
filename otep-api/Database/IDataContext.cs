@@ -16,5 +16,6 @@ namespace Its.Otep.Api.Database
         public DbSet<MOrganizationUser>? OrganizationUsers { get; set; }
         public DbSet<MCustomRole>? CustomRoles { get; set; }
         public DbSet<MDocument>? Documents { get; set; }
+        public DbSet<MJob>? Jobs { get; set; }
     }
 }
