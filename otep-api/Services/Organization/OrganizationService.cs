@@ -11,17 +11,14 @@ namespace Its.Otep.Api.Services
         private readonly IOrganizationRepository? repository = null;
         private readonly IOrganizationUserRepository _orgUserRepo;
         private readonly IUserService userService;
-        private readonly IStorageUtils _storageUtil;
 
         public OrganizationService(
             IOrganizationRepository repo,
             IOrganizationUserRepository orgUserRepo,
-            IUserService userSvc,
-            IStorageUtils storageUtil) : base()
+            IUserService userSvc) : base()
         {
             repository = repo;
             userService = userSvc;
-            _storageUtil = storageUtil;
             _orgUserRepo = orgUserRepo;
         }
 
@@ -65,8 +62,8 @@ namespace Its.Otep.Api.Services
             if (!string.IsNullOrEmpty(org.LogoImagePath))
             {
                 var validFor = TimeSpan.FromMinutes(60);
-                var contentType = "image/png";
-                org.LogoImageUrl = _storageUtil.GenerateDownloadUrl(org.LogoImagePath!, validFor, contentType);
+                //var contentType = "image/png";
+                //org.LogoImageUrl = _storageUtil.GenerateDownloadUrl(org.LogoImagePath!, validFor, contentType);
             }
                 
             return t;
@@ -86,65 +83,11 @@ namespace Its.Otep.Api.Services
             return result;
         }
 
-        private ValidationResult ValidateImageFormat(string bucket, MOrganization org)
-        {
-            ulong maxFileSize = 1 * 1024 * 1024; // 1 MB
-            int maxWidth = 512;
-            int maxHeight = 512;
-
-            //วิธีนี้ใช้ได้แต่เฉพาะไฟล์ PNG เท่านั้น
-            var r = new ValidationResult() { Status = "OK", Description = "" };
-
-            var obj = _storageUtil.GetStorageObject(bucket, org.LogoImagePath!);
-            if (obj == null)
-            {
-                r.Status = "OBJECT_NOT_FOUND";
-                r.Description = $"Object name [{org.LogoImagePath}] not found !!!";
-                return r;
-            }
-
-            if (obj.Size > maxFileSize)
-            {
-                r.Status = "FILE_TOO_BIG";
-                r.Description = $"File must be less than 1MB !!!";
-                return r;
-            }
-
-            if (obj.ContentType != "image/png")
-            {
-                r.Status = "FILE_TYPE_NOT_PNG";
-                r.Description = $"Content type must be 'image/png' !!!";
-                return r;
-            }
-
-            var t = _storageUtil.PartialDownloadToStream(bucket, org.LogoImagePath!, 0, 24);
-            var header = t.Result;
-
-            if (header.Length < 24)
-            {
-                r.Status = "NOT_VALID_PNG_FILE";
-                r.Description = "File is not a valid PNG image!!!";
-                return r;
-            }
-
-            int width = ServiceUtils.ReadInt32BigEndian(header, 16);
-            int height = ServiceUtils.ReadInt32BigEndian(header, 20);
-
-            if (width > maxWidth || height > maxHeight)
-            {
-                r.Status = "INVALID_IMAGE_DIMENSION";
-                r.Description = $"Image dimention [w={width},h={height}] must be less than [w={maxWidth},h={maxHeight}]";
-                return r;
-            }
-
-            return r;
-        }
-
         private void DeleteStorageObject(MOrganization m)
         {
             var objectName = m.LogoImagePath;
             var bucket = Environment.GetEnvironmentVariable("STORAGE_BUCKET")!;
-            _storageUtil.DeleteObject(bucket, objectName!);
+            //_storageUtil.DeleteObject(bucket, objectName!);
         }
 
 
@@ -174,7 +117,7 @@ namespace Its.Otep.Api.Services
             };
 
             NormalizeFields(org);
-
+/*
             if (!string.IsNullOrEmpty(org.LogoImagePath))
             {
                 if (!_storageUtil.IsObjectExist(org.LogoImagePath))
@@ -202,7 +145,7 @@ namespace Its.Otep.Api.Services
                 //Update metadata onix-is-temp-file to 'false'
                 _storageUtil.UpdateMetaData(bucket, org.LogoImagePath, "onix-is-temp-file", "false");
             }
-
+*/
             var t = repository.UpdateOrganization(org);
             r.Organization = t.Result;
 
@@ -219,17 +162,17 @@ namespace Its.Otep.Api.Services
             var validFor = TimeSpan.FromMinutes(15);
             var contentType = $"image/{type}";
 
-            var url = _storageUtil.GenerateUploadUrl(bucket, objectName, validFor, contentType);
-            var previewUrl = _storageUtil.GenerateDownloadUrl(objectName, validFor, contentType);
+            //var url = _storageUtil.GenerateUploadUrl(bucket, objectName, validFor, contentType);
+            //var previewUrl = _storageUtil.GenerateDownloadUrl(objectName, validFor, contentType);
 
             var result = new MVPresignedUrl()
             {
                 Status = "SUCCESS",
                 Description = "",
-                PresignedUrl = url,
+                //PresignedUrl = url,
                 ObjectName = objectName,
                 ImagePath = objectName,
-                PreviewUrl = previewUrl,
+                //PreviewUrl = previewUrl,
             };
 
             return result;

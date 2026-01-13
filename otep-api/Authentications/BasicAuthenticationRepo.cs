@@ -22,11 +22,10 @@ namespace Its.Otep.Api.Authentications
 
             var t = _redis.GetObjectAsync<MVApiKey>(key);
             var mapiKey = t.Result;
-
             if (mapiKey == null)
             {
                 //Not found
-                //Console.WriteLine("################### GET FROM DB ##############3");
+                Console.WriteLine("################### GET FROM DB ##############3");
                 var m = service!.VerifyApiKey(orgId, password);
                 _ = _redis.SetObjectAsync(key, m, TimeSpan.FromMinutes(5));
 
@@ -39,7 +38,7 @@ namespace Its.Otep.Api.Authentications
         public User? Authenticate(string orgId, string user, string password, HttpRequest request)
         {
             var m = VerifyKey(orgId, password);
-            if (m == null)
+            if ((m == null) || (m.ApiKey == null))
             {
                 return null;
             }

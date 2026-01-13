@@ -44,23 +44,8 @@ namespace Its.Otep.Api
                 sp => ConnectionMultiplexer.Connect(redisHostStr));
 
             builder.Services.AddScoped<RedisHelper>();
-
-            builder.Services.AddSingleton(sp =>
-            {
-                // ถ้าใช้ service account json
-                var storageClient = StorageClient.Create(
-                    GoogleCredential.FromFile(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-                );
-
-                return storageClient;
-            });
-            builder.Services.AddSingleton(sp =>
-            {
-                return GoogleCredential.FromFile(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-                                    .CreateScoped("https://www.googleapis.com/auth/cloud-platform");
-            });
             builder.Services.AddSingleton<IRedisHelper, RedisHelper>();
-            builder.Services.AddSingleton<IStorageUtils, StorageUtils>();
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
