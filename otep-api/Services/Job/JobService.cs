@@ -160,6 +160,11 @@ namespace Its.Otep.Api.Services
             repository!.SetCustomOrgId(orgId);
             var result = repository!.GetJobs(param);
 
+            foreach (var job in result)
+            {
+                job.Configuration = "";
+            }
+
             return result;
         }
 

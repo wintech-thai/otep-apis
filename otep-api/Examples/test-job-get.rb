@@ -11,16 +11,10 @@ $stdout.sync = true
 load_env("./.env")
 
 orgId = ENV['API_ORG']
-
-apiUrl = "api/Document/org/#{orgId}/action/AddDocument"
 param = {
-  DocName: "TestDoc#4",
-  Description: "Test job create for document add",
-  Tags: "testing3",
-  DocType: "OAXRG",
+  FullTextSearch: ""
 }
 
+apiUrl = "api/Job/org/#{orgId}/action/GetJobs"
 result = make_request(:post, apiUrl, param)
-
-json = result.to_json
-puts(json)
+puts(result)
