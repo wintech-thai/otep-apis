@@ -76,6 +76,7 @@ namespace Its.Otep.Api
             builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
             builder.Services.AddScoped<IOrganizationUserRepository, OrganizationUserRepository>();
+            builder.Services.AddScoped<IJobRepository, JobRepository>();
 
 
             builder.Services.AddScoped<IRoleService, RoleService>();
@@ -84,6 +85,7 @@ namespace Its.Otep.Api
             builder.Services.AddScoped<IOrganizationService, OrganizationService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IDocumentService, DocumentService>();
+            builder.Services.AddScoped<IJobService, JobService>();
             
 
             builder.Services.AddTransient<IAuthorizationHandler, GenericRbacHandler>();

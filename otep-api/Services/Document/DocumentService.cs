@@ -9,10 +9,13 @@ namespace Its.Otep.Api.Services
     public class DocumentService : BaseService, IDocumentService
     {
         private readonly IDocumentRepository? repository = null;
+        private readonly IJobService _jobService;
 
-        public DocumentService(IDocumentRepository repo) : base()
+        public DocumentService(IDocumentRepository repo, 
+            IJobService jobService) : base()
         {
             repository = repo;
+            _jobService = jobService;
         }
 
         public async Task<MVDocument> GetDocumentById(string orgId, string documentId)
@@ -77,6 +80,29 @@ namespace Its.Otep.Api.Services
             r.Document = result;
 
             r.Document.MetaData = "";
+
+            var job = new MJob()
+            {
+                DocumentId = result.DocId.ToString(),
+                Name = $"{Guid.NewGuid()}",
+                Description = "Document.AddDocument()",
+                Type = "DocumentExtract",
+                Status = "Pending",
+                Tags = "",
+
+                Parameters =
+                [
+                    new MKeyValue { Name = "ORG_ID", Value = orgId },
+
+                    new MKeyValue { Name = "DOCUMENT_ID", Value = result.DocId.ToString() },
+                    new MKeyValue { Name = "DOCUMENT_NANE", Value = result.DocName },
+                    new MKeyValue { Name = "DOCUMENT_TYPE", Value = result.DocType },
+                    new MKeyValue { Name = "DOCUMENT_BUCKET", Value = result.Bucket },
+                    new MKeyValue { Name = "DOCUMENT_PATH", Value = result.Path },
+                ]
+            };
+
+            var _ = _jobService.AddJob(orgId, job);
 
             return r;
         }
