@@ -5,9 +5,9 @@ using System.Data.Entity;
 
 namespace Its.Otep.Api.Database.Repositories
 {
-    public class CustomRoleRepository : BaseRepository, IDocumentRepository
+    public class DocumentRepository : BaseRepository, IDocumentRepository
     {
-        public CustomRoleRepository(IDataContext ctx)
+        public DocumentRepository(IDataContext ctx)
         {
             context = ctx;
         }
