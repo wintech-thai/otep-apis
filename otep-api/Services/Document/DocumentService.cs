@@ -79,6 +79,16 @@ namespace Its.Otep.Api.Services
                 return r;
             }
 
+            //Check เพิ่มเติมว่ามีไฟล์วางอยู่จริงแล้วที่ Bucket/Path
+            var isObjExist = await _storageService!.IsObjectExist(document.Bucket!, document.Path!);
+            if (!isObjExist)
+            {
+                r.Status = "OBJECT_NOT_FOUND";
+                r.Description = $"Storage oject [{document.Path}] is missing from bucket [{document.Bucket}] !!!";
+
+                return r;
+            }
+
             var result = await repository!.AddDocument(document);
             r.Document = result;
 
