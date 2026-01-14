@@ -68,6 +68,7 @@ namespace Its.Otep.Api
             builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+            builder.Services.AddScoped<IOrganizationUserService, OrganizationUserService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IDocumentService, DocumentService>();
             builder.Services.AddScoped<IJobService, JobService>();

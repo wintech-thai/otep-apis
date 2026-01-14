@@ -34,6 +34,7 @@ namespace Its.Otep.Api.Services
         public AuthService(IHttpClientFactory httpClientFactory) : base()
         {
             _httpClientFactory = httpClientFactory;
+            var authPath = ""; //Keycloak เวอร์ชันใหม่ ๆ จะไม่มี /auth แล้ว
 
             var realm = Environment.GetEnvironmentVariable("IDP_REALM");
             var urlPrefix = Environment.GetEnvironmentVariable("IDP_URL_PREFIX");
@@ -41,15 +42,15 @@ namespace Its.Otep.Api.Services
             clientId = Environment.GetEnvironmentVariable("IDP_CLIENT_ID");
             clientSecret = Environment.GetEnvironmentVariable("IDP_CLIENT_SECRET");
 
-            issuer = $"{urlPrefix}/auth/realms/{realm}";
-            tokenEndpoint = $"{urlPrefix}/auth/realms/{realm}/protocol/openid-connect/token";
-            signedKeyUrl = $"{urlPrefix}/auth/realms/{realm}/protocol/openid-connect/certs";
+            issuer = $"{urlPrefix}/{authPath}/realms/{realm}";
+            tokenEndpoint = $"{urlPrefix}/{authPath}/realms/{realm}/protocol/openid-connect/token";
+            signedKeyUrl = $"{urlPrefix}/{authPath}/realms/{realm}/protocol/openid-connect/certs";
 
-            userEndpoint = $"{urlPrefix}/auth/admin/realms/{realm}/users";
-            chagePasswordEndpoint = $"{urlPrefix}/auth/admin/realms/{realm}/users/<<user-id>>/reset-password";
-            updateUserEndpoint = $"{urlPrefix}/auth/admin/realms/{realm}/users/<<user-id>>";
-            logoutEndpoint = $"{urlPrefix}/auth/admin/realms/{realm}/users/<<user-id>>/logout";
-            getUserIdEndpoint = $"{urlPrefix}/auth/admin/realms/{realm}/users?username=<<user-name>>";
+            userEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users";
+            chagePasswordEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users/<<user-id>>/reset-password";
+            updateUserEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users/<<user-id>>";
+            logoutEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users/<<user-id>>/logout";
+            getUserIdEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users?username=<<user-name>>";
         }
 
         private string GetPreferredUsername(string accessToken)
@@ -67,7 +68,7 @@ namespace Its.Otep.Api.Services
         {
             var userToken = new UserToken();
             userToken.Status = "Success";
-
+//Console.WriteLine($"DEBUG_B1 [{tokenEndpoint}]");
             var client = _httpClientFactory.CreateClient();
             var request = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint)
             {
@@ -104,8 +105,9 @@ namespace Its.Otep.Api.Services
                 new KeyValuePair<string,string>("client_id", clientId!),
                 new KeyValuePair<string,string>("client_secret", clientSecret!),
             };
-
+//Console.WriteLine($"DEBUG_A1 [{clientId}], [{clientSecret}]");
             var saToken = GetToken(form);
+//Console.WriteLine($"DEBUG_A2 [{saToken.Status}]");
             return saToken;
         }
 
@@ -137,7 +139,7 @@ namespace Its.Otep.Api.Services
                     locale = new[] { "en" }
                 }
             };
-
+//Console.WriteLine($"DEBUG_C1 [{userEndpoint}]");
             var content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
             var response = await client.PostAsync(userEndpoint, content);
 
@@ -151,6 +153,7 @@ namespace Its.Otep.Api.Services
             {
                 result.Success = false;
                 result.Message = await response.Content.ReadAsStringAsync();
+//Console.WriteLine($"DEBUG_C2 [{result.Message}]");
             }
 
             return result;
