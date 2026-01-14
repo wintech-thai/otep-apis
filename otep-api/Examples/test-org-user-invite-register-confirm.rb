@@ -12,7 +12,7 @@ $stdout.sync = true
 ################### Main #######################
 load_env("./.env")
 
-url = "https://register-dev.otep.triple-t.co/default/user-signup-confirm/dda056a9-e291-4bb8-ad87-59ded7cb2b38?data=eyJFbWFpbCI6InBqYW1lLmZiM0BnbWFpbC5jb20iLCJVc2VyTmFtZSI6InNldWJwb25nLm1vbjMiLCJQYXNzd29yZCI6bnVsbCwiTmFtZSI6bnVsbCwiTGFzdG5hbWUiOm51bGwsIkludml0ZWRCeSI6ImFwaSIsIk9yZ1VzZXJJZCI6IjAxNjM3OTBlLTYxOGEtNGJlNy04MTBhLWFlOTZkNDU0ZTIwYyJ9"
+url = "https://register-dev.otep.triple-t.co/default/user-signup-confirm/705d8453-0960-47a9-8f99-a7da7582b5c4?data=eyJFbWFpbCI6InBqYW1lLmZiQGdtYWlsLmNvbSIsIlVzZXJOYW1lIjoic2V1YnBvbmcubW9uIiwiUGFzc3dvcmQiOm51bGwsIk5hbWUiOm51bGwsIkxhc3RuYW1lIjpudWxsLCJJbnZpdGVkQnkiOiJhcGkiLCJPcmdVc2VySWQiOiJlNmMyMWZhYy00NDkwLTQ2MzItOTY2Ny0wZWFjYTIwOGMwZTMifQ%3d%3d"
 uri = URI.parse(url)
 
 # แปลง query string เป็น hash
@@ -41,7 +41,7 @@ param =  {
   Email: dataObj['Email'],
   UserName: "#{userName}",
   Password: "Abc12345$343#1",
-  Name: "Test1",
+  Name: "Seubpong",
   LastName: "Monsar",
   OrgUserId: dataObj['OrgUserId'],
 }
