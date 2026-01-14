@@ -12,5 +12,6 @@ namespace Its.Otep.Api.Services
         public Task<List<MDocument>> GetDocuments(string orgId, VMDocument param);
         public Task<int> GetDocumentCount(string orgId, VMDocument param);
         public Task<MVDocument> UpdateDocumentById(string orgId, string documentId, MDocument document);
+        public Task<MVPresignedUrl> GetDocumentPostUploadUrl(string orgId, VMPresignedRequest param);
     }
 }

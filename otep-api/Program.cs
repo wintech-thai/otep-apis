@@ -71,7 +71,8 @@ namespace Its.Otep.Api
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IDocumentService, DocumentService>();
             builder.Services.AddScoped<IJobService, JobService>();
-            
+            builder.Services.AddScoped<IObjectStorageService, MinioObjectStorageService>();
+
 
             builder.Services.AddTransient<IAuthorizationHandler, GenericRbacHandler>();
             builder.Services.AddScoped<IBasicAuthenticationRepo, BasicAuthenticationRepo>();

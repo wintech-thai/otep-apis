@@ -10,12 +10,15 @@ namespace Its.Otep.Api.Services
     {
         private readonly IDocumentRepository? repository = null;
         private readonly IJobService _jobService;
+        private readonly IObjectStorageService _storageService;
 
         public DocumentService(IDocumentRepository repo, 
+            IObjectStorageService storageService,
             IJobService jobService) : base()
         {
             repository = repo;
             _jobService = jobService;
+            _storageService = storageService;
         }
 
         public async Task<MVDocument> GetDocumentById(string orgId, string documentId)
@@ -199,6 +202,43 @@ namespace Its.Otep.Api.Services
             r.Document = result;
             //ไม่ให้ส่งออกไป แต่เช็คเพิ่มเติมนะว่าไม่ได้ update กลับไปที่ DB
             r.Document.MetaData = "";
+
+            return r;
+        }
+
+        public async Task<MVPresignedUrl> GetDocumentPostUploadUrl(string orgId, VMPresignedRequest param)
+        {
+            var r = new MVPresignedUrl()
+            {
+                Status = "OK",
+                Description = "Success"
+            };
+
+            var docType = param.DocumentType;
+            var fileName = param.FileName;
+
+            if (string.IsNullOrEmpty(docType))
+            {
+                r.Status = "DOC_TYPE_EMPTY";
+                r.Description = $"Document type is missing";
+
+                return r;
+            }
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                r.Status = "FILE_NAME_EMPTY";
+                r.Description = $"File name is missing";
+
+                return r;
+            }
+
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            var normalizedPath = $"{orgId}/documents/{docType}/{timestamp}_{fileName}";
+            var presignedResult = await _storageService.GetPresignedUrlPost("", normalizedPath, 600);
+
+            r.PresignedResult = presignedResult;
 
             return r;
         }
