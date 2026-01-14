@@ -71,5 +71,13 @@ namespace Its.Otep.Api.Controllers
             var result = await svc.GetDocumentCount(id, request);
             return Ok(result);
         }
+
+        [HttpPost]
+        [Route("org/{id}/action/GetUploadPresignedUrl")]
+        public async Task<IActionResult> GetUploadPresignedUrl(string id, [FromBody] VMPresignedRequest request)
+        {
+            var result = await svc.GetDocumentPostUploadUrl(id, request);
+            return Ok(result);
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace Its.Otep.Api.Authentications
             if (mapiKey == null)
             {
                 //Not found
-                Console.WriteLine("################### GET FROM DB ##############3");
+                //Console.WriteLine("################### GET FROM DB ##############3");
                 var m = service!.VerifyApiKey(orgId, password);
                 _ = _redis.SetObjectAsync(key, m, TimeSpan.FromMinutes(5));
 

@@ -170,8 +170,8 @@ namespace Its.Otep.Api.Services
                 Status = "SUCCESS",
                 Description = "",
                 //PresignedUrl = url,
-                ObjectName = objectName,
-                ImagePath = objectName,
+                //ObjectName = objectName,
+                //ImagePath = objectName,
                 //PreviewUrl = previewUrl,
             };
 

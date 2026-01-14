@@ -12,12 +12,10 @@ load_env("./.env")
 
 orgId = ENV['API_ORG']
 
-apiUrl = "api/Document/org/#{orgId}/action/AddDocument"
+apiUrl = "api/Document/org/#{orgId}/action/GetUploadPresignedUrl"
 param = {
-  DocName: "TestDoc#8",
-  Description: "Test job create for document add",
-  Tags: "testing3",
-  DocType: "OAXRG",
+  FileName: "test-upload.txt",
+  DocumentType: "XFORM",
 }
 
 result = make_request(:post, apiUrl, param)

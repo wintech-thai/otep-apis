@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Its.Otep.Api.Services;
 
 namespace Its.Otep.Api.ModelsViews
 {
@@ -7,9 +8,6 @@ namespace Its.Otep.Api.ModelsViews
     {
         public string? Status { get; set; }
         public string? Description { get; set; }
-        public string? PresignedUrl { get; set; }
-        public string? ObjectName { get; set; }
-        public string? ImagePath { get; set; }
-        public string? PreviewUrl { get; set; }
+        public PresignedPostResult? PresignedResult { get; set; }
     }
 }
