@@ -57,9 +57,11 @@ response = conn.post(uploadUrl) do |req|
 end
 
 status = response.status
-if (status != 200)
+if (status != 204)
   puts("Uploaded done with status [#{response.status}]")
   puts(response.body)
+
+  exit 1
 end
 
 #### AddDocument ####

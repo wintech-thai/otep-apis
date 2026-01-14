@@ -1,6 +1,7 @@
 using Minio;
 using Minio.DataModel;
 using Minio.DataModel.Args;
+using Minio.Exceptions;
 
 namespace Its.Otep.Api.Services
 {
@@ -71,6 +72,25 @@ namespace Its.Otep.Api.Services
             );
 
             return result;
+        }
+
+        public async Task<bool> IsObjectExist(string bucket, string path)
+        {
+            try
+            {
+                await _minioClient.StatObjectAsync(
+                    new StatObjectArgs()
+                        .WithBucket(bucket)
+                        .WithObject(path)
+                );
+
+                return true; // มีไฟล์อยู่จริง
+            }
+            catch (MinioException)
+            {
+                // error อื่น ๆ เช่น permission, network
+                return false;
+            }
         }
     }
 }
