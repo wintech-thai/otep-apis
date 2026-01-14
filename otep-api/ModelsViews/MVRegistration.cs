@@ -4,12 +4,10 @@ using Its.Otep.Api.Models;
 namespace Its.Otep.Api.ModelsViews
 {
     [ExcludeFromCodeCoverage]
-    public class MVOrganizationUser
+    public class MVRegistration
     {
         public string? Status { get; set; }
         public string? Description { get; set; }
-        public MOrganizationUser? OrgUser { get; set; }
-        public MUser? User { get; set; }
-        public string? RegistrationUrl { get; set; }
+        public MUserRegister? User { get; set; }
     }
 }
