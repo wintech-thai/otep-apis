@@ -40,7 +40,7 @@ userName = dataObj['UserName']
 param =  {
   Email: dataObj['Email'],
   UserName: "#{userName}",
-  Password: "Abc12345$343#1",
+  Password: "#{ENV['USER_PASSWORD']}",
   Name: "Sothon",
   LastName: "TripleT",
   OrgUserId: dataObj['OrgUserId'],
