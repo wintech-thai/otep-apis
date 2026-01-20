@@ -34,7 +34,7 @@ namespace Its.Otep.Api.Services
         public AuthService(IHttpClientFactory httpClientFactory) : base()
         {
             _httpClientFactory = httpClientFactory;
-            var authPath = "/"; //Keycloak เวอร์ชันใหม่ ๆ จะไม่มี /auth แล้ว
+            var authPath = ""; //Keycloak เวอร์ชันใหม่ ๆ จะไม่มี /auth แล้ว
 
             var realm = Environment.GetEnvironmentVariable("IDP_REALM");
             var urlPrefix = Environment.GetEnvironmentVariable("IDP_URL_PREFIX");
