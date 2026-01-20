@@ -43,7 +43,7 @@ namespace Its.Otep.Api.Services
             clientSecret = Environment.GetEnvironmentVariable("IDP_CLIENT_SECRET");
 
             issuer = $"{urlPrefix}{authPath}/realms/{realm}";
-Console.WriteLine($"DEBUG_AUTH1 issuer=[{issuer}]");
+//Console.WriteLine($"DEBUG_AUTH1 issuer=[{issuer}]");
             tokenEndpoint = $"{urlPrefix}{authPath}/realms/{realm}/protocol/openid-connect/token";
             signedKeyUrl = $"{urlPrefix}{authPath}/realms/{realm}/protocol/openid-connect/certs";
 

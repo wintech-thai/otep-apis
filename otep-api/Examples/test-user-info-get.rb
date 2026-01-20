@@ -24,7 +24,7 @@ token = File.read(keyFile)
 ENV['API_KEY'] = nil # ถ้าไม่ใช้ API KEY ก็เซ็ตเป็น nil
 ENV['ACCESS_TOKEN'] = token
 
-result = make_request(:post, apiUrl, param)
+result = make_request(:get, apiUrl, param)
 
 json = result.to_json
 puts(json)
