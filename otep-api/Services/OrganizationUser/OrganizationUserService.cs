@@ -83,15 +83,15 @@ namespace Its.Otep.Api.Services
 
             var dataUrlSafe = HttpUtility.UrlEncode(jsonStringB64);
 
-            var registerDomain = "register";
+            var registerDomain = "web";
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Local";
             if (environment != "Production")
             {
-                registerDomain = "register-dev";
+                registerDomain = "web-dev";
             }
 
             var token = Guid.NewGuid().ToString();
-            var registrationUrl = $"https://{registerDomain}.otep.triple-t.co/{orgId}/{regType}/{token}?data={dataUrlSafe}";
+            var registrationUrl = $"https://{registerDomain}.otep.triple-t.co/{regType}/{orgId}/{token}?data={dataUrlSafe}";
 
             var templateType = "user-invitation-to-org";
             var job = new MJob()
