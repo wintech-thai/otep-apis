@@ -1,6 +1,7 @@
 require 'json'
 require 'net/http'
 require 'uri'
+require 'base64'
 
 def json?(str)
   JSON.parse(str)
@@ -22,7 +23,8 @@ end
 def make_request(method, apiName, data)
   host = ENV['API_HTTP_ENDPOINT']
   apiKey = ENV['API_KEY']
-
+  accessToken = ENV['ACCESS_TOKEN']
+  
   uri = URI.parse("#{host}/#{apiName}")  
 
   # แปลง method เช่น "post" → "Net::HTTP::Post"
@@ -35,6 +37,12 @@ def make_request(method, apiName, data)
   if (!apiKey.nil?)
     request.basic_auth("api", apiKey)
     puts("===== Using API KEY =====")
+  end
+
+  if (!accessToken.nil?)
+    tokenB64 = Base64.strict_encode64(accessToken)
+    request['Authorization'] = "Bearer #{tokenB64}"
+    puts("===== Using JWT =====")
   end
 
   if (!data.nil?)
@@ -58,6 +66,7 @@ def make_request(method, apiName, data)
 
   return result
 end
+
 
 def upload_file_to_gcs(presigned_url, file_path, content_type)
   uri = URI.parse(presigned_url)
