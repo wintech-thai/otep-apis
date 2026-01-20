@@ -11,7 +11,7 @@ $stdout.sync = true
 load_env("./.env")
 
 orgId = ENV['API_ORG']
-id = "0163790e-618a-4be7-810a-ae96d454e20c" #"e6c21fac-4490-4632-9667-0eaca208c0e3"
+id = "e6c21fac-4490-4632-9667-0eaca208c0e3" #"0163790e-618a-4be7-810a-ae96d454e20c"
 param = nil
 
 ### GetForgotPasswordLink
