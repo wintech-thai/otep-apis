@@ -11,10 +11,10 @@ $stdout.sync = true
 load_env("./.env")
 
 orgId = ENV['API_ORG']
-id = 
+id = "0163790e-618a-4be7-810a-ae96d454e20c" #"e6c21fac-4490-4632-9667-0eaca208c0e3"
 param = nil
 
 ### GetForgotPasswordLink
 apiUrl = "api/OrganizationUser/org/#{orgId}/action/GetForgotPasswordLink/#{id}"
-result = make_request(:post, apiUrl, param)
+result = make_request(:get, apiUrl, param)
 puts(result)

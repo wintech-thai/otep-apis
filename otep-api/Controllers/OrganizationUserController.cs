@@ -209,7 +209,15 @@ namespace Prom.LPR.Api.Controllers
                 return Ok(svcStatus);
             }
 
-            var user = svcStatus.User!;
+            var user = svcStatus.OrgUser!;
+            if (user == null)
+            {
+                mv.Status = "EMPTY_USER_RETURN";
+                mv.Description = $"No user return for org user ID [{orgUserId}] !!!";
+
+                Response.Headers.Append("CUST_STATUS", mv.Status);
+                return Ok(mv);
+            }
 
             var reg = new MUserRegister()
             {
@@ -217,7 +225,7 @@ namespace Prom.LPR.Api.Controllers
                 UserName = user.UserName!,
                 OrgUserId = user.UserId!.ToString(),
             };
-            var (forgotPasswordUrl, result) = CreateEmailForgotPasswordJob("temp", reg);
+            var (forgotPasswordUrl, result) = CreateEmailForgotPasswordJob(id, reg);
             mv.ForgotPasswordUrl = forgotPasswordUrl;
 
             Response.Headers.Append("CUST_STATUS", result!.Status);
