@@ -34,7 +34,7 @@ namespace Its.Otep.Api.Services
         public AuthService(IHttpClientFactory httpClientFactory) : base()
         {
             _httpClientFactory = httpClientFactory;
-            var authPath = ""; //Keycloak เวอร์ชันใหม่ ๆ จะไม่มี /auth แล้ว
+            var authPath = "/"; //Keycloak เวอร์ชันใหม่ ๆ จะไม่มี /auth แล้ว
 
             var realm = Environment.GetEnvironmentVariable("IDP_REALM");
             var urlPrefix = Environment.GetEnvironmentVariable("IDP_URL_PREFIX");
@@ -42,15 +42,15 @@ namespace Its.Otep.Api.Services
             clientId = Environment.GetEnvironmentVariable("IDP_CLIENT_ID");
             clientSecret = Environment.GetEnvironmentVariable("IDP_CLIENT_SECRET");
 
-            issuer = $"{urlPrefix}/{authPath}/realms/{realm}";
-            tokenEndpoint = $"{urlPrefix}/{authPath}/realms/{realm}/protocol/openid-connect/token";
-            signedKeyUrl = $"{urlPrefix}/{authPath}/realms/{realm}/protocol/openid-connect/certs";
+            issuer = $"{urlPrefix}{authPath}/realms/{realm}";
+            tokenEndpoint = $"{urlPrefix}{authPath}/realms/{realm}/protocol/openid-connect/token";
+            signedKeyUrl = $"{urlPrefix}{authPath}/realms/{realm}/protocol/openid-connect/certs";
 
-            userEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users";
-            chagePasswordEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users/<<user-id>>/reset-password";
-            updateUserEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users/<<user-id>>";
-            logoutEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users/<<user-id>>/logout";
-            getUserIdEndpoint = $"{urlPrefix}/{authPath}/admin/realms/{realm}/users?username=<<user-name>>";
+            userEndpoint = $"{urlPrefix}{authPath}/admin/realms/{realm}/users";
+            chagePasswordEndpoint = $"{urlPrefix}{authPath}/admin/realms/{realm}/users/<<user-id>>/reset-password";
+            updateUserEndpoint = $"{urlPrefix}{authPath}/admin/realms/{realm}/users/<<user-id>>";
+            logoutEndpoint = $"{urlPrefix}{authPath}/admin/realms/{realm}/users/<<user-id>>/logout";
+            getUserIdEndpoint = $"{urlPrefix}{authPath}/admin/realms/{realm}/users?username=<<user-name>>";
         }
 
         private string GetPreferredUsername(string accessToken)

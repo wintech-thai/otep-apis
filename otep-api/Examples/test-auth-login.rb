@@ -24,16 +24,16 @@ ENV['API_KEY'] = nil # ถ้าไม่ใช้ API KEY ก็เซ็ตเ
 result = make_request(:post, apiUrl, param)
 #puts(result)
 
-#token = result["token"]["access_token"]
-#puts(token)
-
-apiUrl = "api/Auth/org/#{orgId}/action/Refresh"
-param =  {
-  RefreshToken: result["token"]["refresh_token"],
-}
-result = make_request(:post, apiUrl, param)
-
 token = result["token"]["access_token"]
 puts(token)
+
+#apiUrl = "api/Auth/org/#{orgId}/action/Refresh"
+#param =  {
+#  RefreshToken: result["token"]["refresh_token"],
+#}
+#result = make_request(:post, apiUrl, param)
+
+#token = result["token"]["access_token"]
+#puts(token)
 
 File.write(keyFile, token)
