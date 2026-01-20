@@ -5,6 +5,10 @@ using Its.Otep.Api.Models;
 using Its.Otep.Api.Services;
 using Its.Otep.Api.ModelsViews;
 using Its.Otep.Api.ViewsModels;
+using System.Text.Json;
+using System.Text;
+using System.Web;
+using Its.Otep.Api.Utils;
 
 namespace Prom.LPR.Api.Controllers
 {
@@ -14,11 +18,19 @@ namespace Prom.LPR.Api.Controllers
     public class OrganizationUserController : ControllerBase
     {
         private readonly IOrganizationUserService svc;
+        private readonly IJobService _jobSvc;
+        private readonly IRedisHelper _redis;
 
         [ExcludeFromCodeCoverage]
-        public OrganizationUserController(IOrganizationUserService service)
+        public OrganizationUserController(
+            IOrganizationUserService service,
+            IJobService jobSvc,
+            IRedisHelper redis
+            )
         {
             svc = service;
+            _jobSvc = jobSvc;
+            _redis = redis;
         }
 
         [ExcludeFromCodeCoverage]
@@ -126,6 +138,90 @@ namespace Prom.LPR.Api.Controllers
 
             Response.Headers.Append("CUST_STATUS", result!.Status);
             return Ok(result);
+        }
+
+        private (string, MVJob?) CreateEmailForgotPasswordJob(string orgId, MUserRegister reg)
+        {
+            var regType = "forgot-password";
+
+            var jsonString = JsonSerializer.Serialize(reg);
+            byte[] jsonBytes = Encoding.UTF8.GetBytes(jsonString);
+            string jsonStringB64 = Convert.ToBase64String(jsonBytes);
+
+            var dataUrlSafe = HttpUtility.UrlEncode(jsonStringB64);
+
+            var registerDomain = "web";
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Local";
+            if (environment != "Production")
+            {
+                registerDomain = "web-dev";
+            }
+
+            var token = Guid.NewGuid().ToString();
+            var registrationUrl = $"https://{registerDomain}.otep.triple-t.co/{regType}/{orgId}/{token}?data={dataUrlSafe}";
+
+            var templateType = "user-forgot-password";
+            var job = new MJob()
+            {
+                Name = $"{Guid.NewGuid()}",
+                Description = "OrganizationUser.CreateEmailForgotPasswordJob()",
+                Type = "SimpleEmailSend",
+                Status = "Pending",
+                Tags = templateType,
+
+                Parameters =
+                [
+                    new MKeyValue { Name = "EMAIL_NOTI_ADDRESS", Value = "pjame.fb@gmail.com" },
+                    new MKeyValue { Name = "EMAIL_OTP_ADDRESS", Value = reg.Email },
+                    new MKeyValue { Name = "USER_NAME", Value = reg.UserName },
+                    new MKeyValue { Name = "TEMPLATE_TYPE", Value = templateType },
+                    new MKeyValue { Name = "USER_ORG_ID", Value = orgId },
+                    new MKeyValue { Name = "RESET_PASSWORD_URL", Value = registrationUrl },
+                ]
+            };
+
+            var result = _jobSvc.AddJob(orgId, job);
+
+            //ใส่ data ไปที่ Redis เพื่อให้ register service มาดึงข้อมูลไปใช้ต่อ
+            var cacheKey = CacheHelper.CreateApiOtpKey(orgId, "UserForgotPassword");
+            _ = _redis.SetObjectAsync($"{cacheKey}:{token}", reg, TimeSpan.FromMinutes(60 * 24)); //หมดอายุ 1 วัน
+
+            return (registrationUrl, result);
+        }
+
+        [ExcludeFromCodeCoverage]
+        [HttpGet]
+        [Route("org/{id}/action/GetForgotPasswordLink/{userId}")]
+        public IActionResult GetForgotPasswordLink(string id, string userId)
+        {
+            //ต้องใช้งานอย่างระมัดระวัง อย่างไป grant สิทธ์ให้ user แบบมั่ว ๆ ซั่ว ๆ นะ
+            //จริง ๆ ควรต้องส่งไปยัง email เลยแต่ใน OTEP ไม่มีระบบ email
+            var mv = new MVOrganizationUserRegistration()
+            {
+                Status = "OK",
+                Description = "Success"
+            };
+
+            var svcStatus = svc.GetUserByIdLeftJoin(id, userId);
+            if (svcStatus.Status != "OK")
+            {
+                Response.Headers.Append("CUST_STATUS", svcStatus.Status);
+                return Ok(svcStatus);
+            }
+
+            var user = svcStatus.User!;
+
+            var reg = new MUserRegister()
+            {
+                Email = user.UserEmail,
+                UserName = user.UserName!,
+                OrgUserId = user.UserId!.ToString(),
+            };
+            var (forgotPasswordUrl, result) = CreateEmailForgotPasswordJob("temp", reg);
+            mv.ForgotPasswordUrl = forgotPasswordUrl;
+
+            Response.Headers.Append("CUST_STATUS", result!.Status);
+            return Ok(mv);
         }
     }
 }
