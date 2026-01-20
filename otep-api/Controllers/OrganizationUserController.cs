@@ -191,8 +191,8 @@ namespace Prom.LPR.Api.Controllers
 
         [ExcludeFromCodeCoverage]
         [HttpGet]
-        [Route("org/{id}/action/GetForgotPasswordLink/{userId}")]
-        public IActionResult GetForgotPasswordLink(string id, string userId)
+        [Route("org/{id}/action/GetForgotPasswordLink/{orgUserId}")]
+        public IActionResult GetForgotPasswordLink(string id, string orgUserId)
         {
             //ต้องใช้งานอย่างระมัดระวัง อย่างไป grant สิทธ์ให้ user แบบมั่ว ๆ ซั่ว ๆ นะ
             //จริง ๆ ควรต้องส่งไปยัง email เลยแต่ใน OTEP ไม่มีระบบ email
@@ -202,7 +202,7 @@ namespace Prom.LPR.Api.Controllers
                 Description = "Success"
             };
 
-            var svcStatus = svc.GetUserByIdLeftJoin(id, userId);
+            var svcStatus = svc.GetUserByIdLeftJoin(id, orgUserId);
             if (svcStatus.Status != "OK")
             {
                 Response.Headers.Append("CUST_STATUS", svcStatus.Status);
