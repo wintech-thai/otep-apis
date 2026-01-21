@@ -14,6 +14,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.ResponseCompression;
+using Its.Otep.Api.AuditLogs;
 
 
 namespace Its.Otep.Api
@@ -119,6 +120,7 @@ namespace Its.Otep.Api
                 app.UseSwaggerUI();
             }
 
+            app.UseMiddleware<AuditLogMiddleware>();
             app.MapHealthChecks("/health");
             app.UseHttpsRedirection();
             app.UseAuthentication();
